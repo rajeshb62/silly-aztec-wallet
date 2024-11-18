@@ -12,8 +12,9 @@ async function main() {
     let pxe: PXE;
     pxe = await setupSandbox();
 
-    let block = await pxe.getBlock(1);
-    console.log(block)
+    let block = await pxe.getBlock(2);
+    console.log("connected to pxe");
+    //console.log(block)
     console.log(block?.hash())
 }
 

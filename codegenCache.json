@@ -2,5 +2,9 @@
   "easy_private_voting_contract-EasyPrivateVoting.json": {
     "contractName": "EasyPrivateVoting",
     "hash": "41a71ded05fb599c643f5c564286a96e1f4dbb2f61c7831c2c279874e9f75c6c"
+  },
+  "crowdfunding_contract-SchnorrHardcodedAccount.json": {
+    "contractName": "SchnorrHardcodedAccount",
+    "hash": "8e9f3013905bee1f83c0c97c1059fe81fb77fb43cfcdc1cde3331dff0dcd0e90"
   }
 }
