@@ -1,22 +1,22 @@
-# Aztec Wallet
+# Silly Aztec Wallet
 
-An experimental wallet implementation using the Aztec Protocol. This project was forked from aztec-starter and modified to explore wallet functionality.
+Opinionated, experimental and silly. privacy supports this wallet.
 
 ## Features
-- Schnorr signature-based account management
-- Token operations (minting, transfers)
-- Private transaction support
+- cooking
 
 ## Setup
+Why?
 1. Clone the repository
 2. Install dependencies: `yarn install`
 3. Run the local node: `aztec-sandbox`
 4. Deploy contracts: `yarn deploy`
 
 ## Scripts
-- `yarn deploy`: Deploy the contracts
-- `yarn send-tx`: Send a test transaction
-- `yarn test`: Run the test suite
+Why again?
+- `yarn deploy-schnorr`: Deploy the contract in one way
+- `yarn send-tx`: Deploy the contract in another way and interact with token contract
+- `yarn test`: Run the test suite- dont do it unless you want to get confused
 
 ## Development
 This is an experimental project for learning purposes.
