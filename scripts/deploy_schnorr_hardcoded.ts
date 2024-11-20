@@ -43,6 +43,11 @@ async function main() {
     .deployed();
     
     console.log('Deployed at:', hardcodedAccount.address.toString());
+    console.log("hardcoded account wallet object:", hardcodedAccount.wallet);
+    const wallet_h = hardcodedAccount.wallet;
+    const address = wallet_h.getCompleteAddress().address;
+    console.log('wallet object looks like:', wallet)
+    
 } 
 
 main();

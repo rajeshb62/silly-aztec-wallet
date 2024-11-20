@@ -15,7 +15,8 @@
     "get-block": "node --loader ts-node/esm scripts/getBlock.ts",
     "test": "NODE_NO_WARNINGS=1 node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --config jest.integration.config.json && aztec test",
     "update": "aztec update --contract . && ./.github/scripts/update_contract.sh $(grep -oP 'tag\\s*=\\s*\"\\K[^\"]+' \"Nargo.toml\" | head -1) && yarn",
-    "deploy-schnorr": "node --loader ts-node/esm scripts/deploy_schnorr_hardcoded.ts"
+    "deploy-schnorr": "node --loader ts-node/esm scripts/deploy_schnorr_hardcoded.ts",
+    "send-tx": "node --loader ts-node/esm ./scripts/send_tx.ts"
   },
   "dependencies": {
     "@aztec/accounts": "0.62.0",
