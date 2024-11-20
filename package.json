@@ -1,8 +1,11 @@
 {
-  "name": "private_voting_codespace",
+  "name": "aztec-wallet",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/critesjosh/private_voting_codespace.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/aztec-wallet.git"
+  },
   "author": "Josh Crites <jc@joshcrites.com>",
   "license": "MIT",
   "private": true,
