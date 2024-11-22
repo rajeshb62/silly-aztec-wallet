@@ -7,13 +7,13 @@ import {
   waitForPXE,
   createPXEClient
 } from '@aztec/aztec.js';
-import { SchnorrHardcodedAccountContractArtifact } from '../src/artifacts/SchnorrHardcodedAccount.js';
+import { SillyAztecAccountContractArtifact } from '../src/artifacts/SillyAztecAccount.js';
 import { TokenContract } from '@aztec/noir-contracts.js/Token';
 
 /** Minimal account contract that always validates */
 class SimpleAccountContract extends DefaultAccountContract {
   constructor() {
-    super(SchnorrHardcodedAccountContractArtifact);
+    super(SillyAztecAccountContractArtifact);
   }
 
   getDeploymentArgs(): undefined {

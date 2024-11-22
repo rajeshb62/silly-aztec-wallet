@@ -1,8 +1,8 @@
-import { PXE, waitForPXE, createPXEClient } from "@aztec/aztec.js";
+import { PXE, waitForPXE, createPXEClient, Contract } from "@aztec/aztec.js";
 import { getSchnorrAccount } from '@aztec/accounts/schnorr';
 import { Fr, deriveSigningKey } from '@aztec/circuits.js';
 import { getInitialTestAccountsWallets } from "@aztec/accounts/testing";
-import { SchnorrHardcodedAccountContract } from '../src/artifacts/SchnorrHardcodedAccount.js';
+import { SillyAztecAccountContractArtifact } from '../src/artifacts/SillyAztecAccount.js';
 
 const setupSandbox = async () => {
   const { PXE_URL = 'http://localhost:8080' } = process.env;
@@ -38,16 +38,14 @@ async function main() {
     
     // Deploy hardcoded account contract
     console.log('Deploying hardcoded account contract...');
-    const hardcodedAccount = await SchnorrHardcodedAccountContract.deploy(wallet)
-    .send()
-    .deployed();
+    const hardcodedAccount = await Contract.deploy(wallet, SillyAztecAccountContractArtifact, [])
+        .send()
+        .deployed();
     
     console.log('Deployed at:', hardcodedAccount.address.toString());
-    console.log("hardcoded account wallet object:", hardcodedAccount.wallet);
-    const wallet_h = hardcodedAccount.wallet;
-    const address = wallet_h.getCompleteAddress().address;
-    console.log('wallet object looks like:', wallet)
-    
+    console.log("hardcoded account wallet object:", hardcodedAccount);
+    const address = wallet.getCompleteAddress().address;
+    console.log('wallet object looks like:', wallet);
 } 
 
 main();
