@@ -19,4 +19,4 @@ Why again?
 - `yarn test`: Run the test suite- dont do it unless you want to get confused
 
 ## Development
-This is an experimental project for learning purposes.
+This is a silly project. I wouldnt trust my funds with it. Yet.

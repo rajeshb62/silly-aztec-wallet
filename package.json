@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/YOUR_USERNAME/aztec-wallet.git"
   },
-  "author": "Josh Crites <jc@joshcrites.com>",
+  "author": "Rajesh",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -22,9 +22,9 @@
     "send-tx": "node --loader ts-node/esm ./scripts/send_tx.ts"
   },
   "dependencies": {
-    "@aztec/accounts": "0.62.0",
-    "@aztec/aztec.js": "0.62.0",
-    "@aztec/noir-contracts.js": "0.62.0",
+    "@aztec/accounts": "0.63.1",
+    "@aztec/aztec.js": "0.63.1",
+    "@aztec/noir-contracts.js": "0.63.1",
     "@types/node": "^22.5.1"
   },
   "devDependencies": {
