@@ -5,13 +5,15 @@ import {
   Fr,
   PXE,
   waitForPXE,
-  createPXEClient
+  createPXEClient,
 } from '@aztec/aztec.js';
+import { poseidon2Hash } from '@aztec/foundation/crypto';
+import { GeneratorIndex } from '@aztec/circuits.js';
 import { SillyAztecAccountContractArtifact } from '../src/artifacts/SillyAztecAccount.js';
 import { TokenContract } from '@aztec/noir-contracts.js/Token';
 
-/** Minimal account contract that always validates */
-class SimpleAccountContract extends DefaultAccountContract {
+/** Account contract that validates using password hash */
+class PasswordAccountContract extends DefaultAccountContract {
   constructor() {
     super(SillyAztecAccountContractArtifact);
   }
@@ -22,7 +24,24 @@ class SimpleAccountContract extends DefaultAccountContract {
 
   getAuthWitnessProvider() {
     return {
-      createAuthWit: (hash: Fr) => Promise.resolve(new AuthWitness(hash, new Array(64).fill(0)))
+      createAuthWit: async (_messageHash: Fr) => {
+        const fields = [
+          Fr.fromString('0'),
+          Fr.fromString('1')
+        ];
+        console.log(`Field values:`, fields.map(f => f.toString()));
+        
+        const passwordHash = poseidon2Hash(fields);
+        console.log('Password hash:', passwordHash.toString());
+        
+        const witness = new AuthWitness(_messageHash, [passwordHash]);
+        console.log('Created witness with:', {
+            hash: _messageHash.toString(),
+            args: [passwordHash.toString()]
+        });
+        
+        return witness;
+      }
     };
   }
 }
@@ -31,7 +50,7 @@ async function main() {
     const pxe = await createPXEClient(process.env.PXE_URL || 'http://localhost:8080');
     await waitForPXE(pxe);
 
-    const account = new AccountManager(pxe, Fr.random(), new SimpleAccountContract());
+    const account = new AccountManager(pxe, Fr.random(), new PasswordAccountContract());
     const wallet = await account.waitSetup();
     const address = wallet.getCompleteAddress().address;
     console.log('Deployed account contract. wallet looks like:', wallet);
