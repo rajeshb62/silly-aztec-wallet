@@ -25,12 +25,17 @@ class PasswordAccountContract extends DefaultAccountContract {
   getAuthWitnessProvider() {
     return {
       createAuthWit: async (_messageHash: Fr) => {
-        const fields = [
-          Fr.fromString('0'),
-          Fr.fromString('1')
-        ];
+        // Create field elements for each character in 'Origin42!'
+        const chars = [79, 114, 105, 103, 105, 110, 52, 50, 33];
+        const fields = chars.map(char => {
+          const buffer = Buffer.alloc(32, 0);
+          buffer[31] = char;  // Write in little-endian
+          return Fr.fromBuffer(buffer);
+        });
+        
         console.log(`Field values:`, fields.map(f => f.toString()));
         
+        // Hash all field elements
         const passwordHash = poseidon2Hash(fields);
         console.log('Password hash:', passwordHash.toString());
         

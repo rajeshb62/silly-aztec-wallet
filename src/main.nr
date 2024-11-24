@@ -15,14 +15,21 @@ contract SillyAztecAccount {
     use dep::aztec::oracle::debug_log::{ debug_log, debug_log_format };
 
 
-    // Password value as array of Field elements
-    global PASSWORD: [Field; 2] = [
-        0,
-        1
+    // Password 'Origin42!' represented as array of ASCII values
+    global PASSWORD: [Field; 9] = [
+        79,  // 'O'
+        114, // 'r'
+        105, // 'i'
+        103, // 'g'
+        105, // 'i'
+        110, // 'n'
+        52,  // '4'
+        50,  // '2'
+        33   // '!'
     ];
 
     // Hash of the password - computed once and stored
-    global PASSWORD_HASH: Field = poseidon2::Poseidon2::hash(PASSWORD, 2);
+    global PASSWORD_HASH: Field = poseidon2::Poseidon2::hash(PASSWORD, 9);  // Length is 9
 
     
 
@@ -48,7 +55,7 @@ contract SillyAztecAccount {
         
         // Get witness from outer_hash
         let witness: [Field; 1] = unsafe { get_auth_witness(outer_hash) };
-        debug_log("Got witness pupu:");
+        debug_log("Got witness papu:");
         debug_log_format("Witness: {}", [witness[0]]);
         
         witness[0] == PASSWORD_HASH
