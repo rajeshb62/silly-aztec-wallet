@@ -1,0 +1,1 @@
+import { PasswordAccountContract } from '../../utils/account.js'; 

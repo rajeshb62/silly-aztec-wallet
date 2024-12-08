@@ -11,20 +11,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "clean": "rm -rf ./src/artifacts ./target",
-    "codegen": "aztec codegen target --outdir src/artifacts",
-    "compile": "${AZTEC_NARGO:-aztec-nargo} compile",
+    "clean": "rm -rf ./src/artifacts ./contracts/target",
+    "codegen": "cd contracts && aztec codegen target --outdir ../src/artifacts",
+    "compile": "cd contracts && ${AZTEC_NARGO:-aztec-nargo} compile",
     "deploy": "node --loader ts-node/esm scripts/deploy.ts",
     "get-block": "node --loader ts-node/esm scripts/getBlock.ts",
     "test": "NODE_NO_WARNINGS=1 node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --config jest.integration.config.json && aztec test",
     "update": "aztec update --contract . && ./.github/scripts/update_contract.sh $(grep -oP 'tag\\s*=\\s*\"\\K[^\"]+' \"Nargo.toml\" | head -1) && yarn",
     "deploy-schnorr": "node --loader ts-node/esm scripts/deploy_schnorr_hardcoded.ts",
-    "send-tx": "node --loader ts-node/esm ./scripts/send_tx.ts"
+    "send-tx": "node --loader ts-node/esm ./scripts/send_tx.ts",
+    "cli": "node --loader ts-node/esm src/cli.ts"
   },
   "dependencies": {
-    "@aztec/accounts": "0.63.1",
-    "@aztec/aztec.js": "0.63.1",
-    "@aztec/noir-contracts.js": "0.63.1",
+    "@aztec/accounts": "0.65.2",
+    "@aztec/aztec.js": "0.65.2",
+    "@aztec/noir-contracts.js": "0.65.2",
+    "commander": "^12.1.0",
     "@types/node": "^22.5.1"
   },
   "devDependencies": {

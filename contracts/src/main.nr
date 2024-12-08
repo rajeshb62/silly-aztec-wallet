@@ -1,5 +1,4 @@
 // docs:start:contract
-// Account contract that uses Schnorr signatures for authentication using a hardcoded public key.
 use dep::aztec::macros::aztec;
 
 #[aztec]
@@ -11,7 +10,7 @@ contract SillyAztecAccount {
     };
     use dep::aztec::prelude::PrivateContext;
     use std::hash::poseidon2;
-    use dep::aztec::macros::functions::{private, view};
+    use dep::aztec::macros::functions::{private, view, initializer};
     use dep::aztec::oracle::debug_log::{ debug_log, debug_log_format };
 
 
@@ -31,7 +30,11 @@ contract SillyAztecAccount {
     // Hash of the password - computed once and stored
     global PASSWORD_HASH: Field = poseidon2::Poseidon2::hash(PASSWORD, 9);  // Length is 9
 
-    
+    #[initializer]
+    #[private]
+    fn constructor() {
+       
+}
 
     // Note: If you globally change the entrypoint signature don't forget to update account_entrypoint.ts
     #[private]

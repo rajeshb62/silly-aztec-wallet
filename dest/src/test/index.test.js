@@ -1,0 +1,64 @@
+import { EasyPrivateVotingContractArtifact, EasyPrivateVotingContract } from "../artifacts/EasyPrivateVoting.js";
+import { ContractDeployer, createDebugLogger, Fr, waitForPXE, TxStatus, createPXEClient, getContractInstanceFromDeployParams } from "@aztec/aztec.js";
+import { getInitialTestAccountsWallets } from "@aztec/accounts/testing";
+const setupSandbox = async () => {
+    const { PXE_URL = 'http://localhost:8080' } = process.env;
+    const pxe = createPXEClient(PXE_URL);
+    await waitForPXE(pxe);
+    return pxe;
+};
+describe("Voting", () => {
+    let pxe;
+    let wallets = [];
+    let accounts = [];
+    let logger;
+    beforeAll(async () => {
+        logger = createDebugLogger('aztec:aztec-starter');
+        logger.info("Aztec-Starter tests running.");
+        pxe = await setupSandbox();
+        wallets = await getInitialTestAccountsWallets(pxe);
+        accounts = wallets.map(w => w.getCompleteAddress());
+    });
+    it("Deploys the contract", async () => {
+        const salt = Fr.random();
+        const VotingContractArtifact = EasyPrivateVotingContractArtifact;
+        const [deployerWallet, adminWallet] = wallets; // using first account as deployer and second as contract admin
+        const adminAddress = adminWallet.getCompleteAddress().address;
+        const deploymentData = getContractInstanceFromDeployParams(VotingContractArtifact, {
+            constructorArgs: [adminAddress],
+            salt,
+            deployer: deployerWallet.getAddress()
+        });
+        const deployer = new ContractDeployer(VotingContractArtifact, deployerWallet);
+        const tx = deployer.deploy(adminAddress).send({ contractAddressSalt: salt });
+        const receipt = await tx.getReceipt();
+        expect(receipt).toEqual(expect.objectContaining({
+            status: TxStatus.PENDING,
+            error: ''
+        }));
+        const receiptAfterMined = await tx.wait({ wallet: deployerWallet });
+        expect(await pxe.getContractInstance(deploymentData.address)).toBeDefined();
+        expect(await pxe.isContractPubliclyDeployed(deploymentData.address)).toBeTruthy();
+        expect(receiptAfterMined).toEqual(expect.objectContaining({
+            status: TxStatus.SUCCESS,
+        }));
+        expect(receiptAfterMined.contract.instance.address).toEqual(deploymentData.address);
+    }, 300000);
+    it("It casts a vote", async () => {
+        const candidate = new Fr(1);
+        const contract = await EasyPrivateVotingContract.deploy(wallets[0], accounts[0].address).send().deployed();
+        const tx = await contract.methods.cast_vote(candidate).send().wait();
+        let count = await contract.methods.get_vote(candidate).simulate();
+        expect(count).toBe(1n);
+    }, 300000);
+    it("It should fail when trying to vote twice", async () => {
+        const candidate = new Fr(1);
+        const contract = await EasyPrivateVotingContract.deploy(wallets[0], accounts[0].address).send().deployed();
+        await contract.methods.cast_vote(candidate).send().wait();
+        const secondVoteReceipt = await contract.methods.cast_vote(candidate).send().getReceipt();
+        expect(secondVoteReceipt).toEqual(expect.objectContaining({
+            status: TxStatus.DROPPED,
+        }));
+    }, 300000);
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXgudGVzdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy90ZXN0L2luZGV4LnRlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLGlDQUFpQyxFQUFFLHlCQUF5QixFQUFFLE1BQU0sbUNBQW1DLENBQUE7QUFDaEgsT0FBTyxFQUFrQyxnQkFBZ0IsRUFBRSxpQkFBaUIsRUFBRSxFQUFFLEVBQU8sVUFBVSxFQUFFLFFBQVEsRUFBRSxlQUFlLEVBQUUsbUNBQW1DLEVBQWUsTUFBTSxpQkFBaUIsQ0FBQztBQUN4TSxPQUFPLEVBQUUsNkJBQTZCLEVBQUUsTUFBTSx5QkFBeUIsQ0FBQTtBQUV2RSxNQUFNLFlBQVksR0FBRyxLQUFLLElBQUksRUFBRTtJQUM1QixNQUFNLEVBQUUsT0FBTyxHQUFHLHVCQUF1QixFQUFFLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQztJQUMxRCxNQUFNLEdBQUcsR0FBRyxlQUFlLENBQUMsT0FBTyxDQUFDLENBQUM7SUFDckMsTUFBTSxVQUFVLENBQUMsR0FBRyxDQUFDLENBQUM7SUFDdEIsT0FBTyxHQUFHLENBQUM7QUFDZixDQUFDLENBQUM7QUFFRixRQUFRLENBQUMsUUFBUSxFQUFFLEdBQUcsRUFBRTtJQUNwQixJQUFJLEdBQVEsQ0FBQztJQUNiLElBQUksT0FBTyxHQUFvQixFQUFFLENBQUM7SUFDbEMsSUFBSSxRQUFRLEdBQXNCLEVBQUUsQ0FBQztJQUNyQyxJQUFJLE1BQW1CLENBQUM7SUFFeEIsU0FBUyxDQUFDLEtBQUssSUFBSSxFQUFFO1FBQ2pCLE1BQU0sR0FBRyxpQkFBaUIsQ0FBQyxxQkFBcUIsQ0FBQyxDQUFDO1FBQ2xELE1BQU0sQ0FBQyxJQUFJLENBQUMsOEJBQThCLENBQUMsQ0FBQTtRQUUzQyxHQUFHLEdBQUcsTUFBTSxZQUFZLEVBQUUsQ0FBQztRQUUzQixPQUFPLEdBQUcsTUFBTSw2QkFBNkIsQ0FBQyxHQUFHLENBQUMsQ0FBQztRQUNuRCxR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
