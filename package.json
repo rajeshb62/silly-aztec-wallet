@@ -15,12 +15,12 @@
     "codegen": "cd contracts && aztec codegen target --outdir ../src/artifacts",
     "compile": "cd contracts && ${AZTEC_NARGO:-aztec-nargo} compile",
     "deploy": "node --loader ts-node/esm scripts/deploy.ts",
-    "get-block": "node --loader ts-node/esm scripts/getBlock.ts",
+    "get-block": "node --loader ts-node/esm ./scripts/getBlock.ts",
     "test": "NODE_NO_WARNINGS=1 node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --config jest.integration.config.json && aztec test",
-    "update": "aztec update --contract . && ./.github/scripts/update_contract.sh $(grep -oP 'tag\\s*=\\s*\"\\K[^\"]+' \"Nargo.toml\" | head -1) && yarn",
+    "update": "aztec update --contract contracts && ./.github/scripts/update_contract.sh $(grep -oP 'tag\\s*=\\s*\"\\K[^\"]+' \"contracts/Nargo.toml\" | head -1) && yarn",
     "deploy-schnorr": "node --loader ts-node/esm scripts/deploy_schnorr_hardcoded.ts",
     "send-tx": "node --loader ts-node/esm ./scripts/send_tx.ts",
-    "cli": "node --loader ts-node/esm src/cli.ts"
+    "cli": "node --loader ts-node/esm src/cli/cli.ts"
   },
   "dependencies": {
     "@aztec/accounts": "0.65.2",
