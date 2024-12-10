@@ -6,8 +6,7 @@ export async function send(
   methodName: string,
   accountAddress: string, 
   contractAddress: string,
-  minterAddress: string,
-  amount: string,
+  args: any[],
   contractArtifact: ContractArtifact
 ) {
   try {
@@ -17,7 +16,6 @@ export async function send(
     
     console.log('Connected to PXE');
 
-    // Get account using custom PasswordAccountContract
     const account = new AccountManager(
       pxe,
       Fr.ZERO,
@@ -26,28 +24,29 @@ export async function send(
     );
     
     const wallet = await account.getWallet();
-    
-    // Add detailed wallet logging
-    console.log('Wallet details:');
-    console.log('  Address:', wallet.getAddress().toString());
-    console.log('  Complete Address:', wallet.getCompleteAddress());
     console.log('Wallet loaded');
 
-    // Get contract instance using provided artifact
     const contract = await Contract.at(
       AztecAddress.fromString(contractAddress),
       contractArtifact,
       wallet
     );
     console.log('Contract loaded');
+    
+    // Filter out only the string arguments we care about
+    // const actualArgs = args.filter(arg => typeof arg === 'string');
+    console.log('Actual args:', args);
 
-    // Prepare function arguments
-    const functionArgs = [
-      Fr.fromString(minterAddress),
-      Fr.fromString(amount)
-    ];
-
-    // Call the method
+    // Convert all arguments to Fr since mint_to_public expects Fields
+    const functionArgs = args.map(arg => {
+      if (arg.startsWith('0x')) {
+        // For hex addresses, first convert to AztecAddress then to field
+        return AztecAddress.fromString(arg).toField();
+      }
+      // For regular numbers
+      return Fr.fromString(arg);
+    });
+    console.log(functionArgs);
     const call = contract.methods[methodName](...functionArgs);
 
     // Send transaction
@@ -66,7 +65,6 @@ export async function send(
     console.log(` Tx fee: ${receipt.transactionFee}`);
     console.log(` Status: ${receipt.status}`);
     console.log(` Block number: ${receipt.blockNumber}`);
-    // console.log(` Block hash: ${receipt.blockHash?.toString('hex')}`);
 
     return {
       txHash: receipt.txHash,

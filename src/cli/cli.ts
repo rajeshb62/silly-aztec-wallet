@@ -10,8 +10,9 @@ const CONTRACT_ARTIFACTS = {
   'token': TokenContract.artifact,
   // We can add more contract types here
   // 'other-contract': OtherContract.artifact,
-};
+} as const;
 
+// Create a type from the keys of CONTRACT_ARTIFACTS
 type ContractType = keyof typeof CONTRACT_ARTIFACTS;
 
 program
@@ -21,27 +22,28 @@ program
 
 program
   .command('send')
-  .description('Send a transaction')
+  .description('Send a transaction to an Aztec contract')
   .argument('<contract-type>', 'type of contract (e.g., token)')
   .argument('<method>', 'method name to call')
-  .argument('<account-address>', 'account address')
-  .argument('<contract-address>', 'contract address')
-  .argument('<minter-address>', 'minter address')
-  .argument('<amount>', 'amount to mint')
-  .action(async (contractType, method, accountAddress, contractAddress, minterAddress, amount) => {
+  .option('-a, --account <address>', 'account address to send from')
+  .option('-c, --contract <address>', 'contract address to call')
+  .option('-p, --params <values...>', 'method parameters')
+  .action(async (contractType: ContractType, method, options) => {
     try {
-      if (!(contractType in CONTRACT_ARTIFACTS)) {
-        throw new Error(`Unsupported contract type: ${contractType}. Supported types: ${Object.keys(CONTRACT_ARTIFACTS).join(', ')}`);
+      console.log('Options:', options);
+
+      if (!options.account || !options.contract) {
+        throw new Error('Account and contract addresses are required');
       }
 
       const result = await send(
-        method, 
-        accountAddress, 
-        contractAddress, 
-        minterAddress, 
-        amount,
-        CONTRACT_ARTIFACTS[contractType as ContractType]
+        method,
+        options.account,
+        options.contract,
+        options.params || [],
+        CONTRACT_ARTIFACTS[contractType]
       );
+
       console.log('Transaction successful');
       console.log(`Transaction hash: ${result.txHash}`);
     } catch (error) {
