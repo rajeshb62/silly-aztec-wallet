@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import { send } from './commands/send.js';
 import { TokenContract } from '@aztec/noir-contracts.js/Token';
+import { simulate } from './commands/simulate.js';
 
 const program = new Command();
 
@@ -28,7 +29,7 @@ program
   .option('-a, --account <address>', 'account address to send from')
   .option('-c, --contract <address>', 'contract address to call')
   .option('-p, --params <values...>', 'method parameters')
-  .option('-s, --salt <value>', 'salt for account creation', '0x268b4064751e9d98e9da30bb2b89c25eb21f35c0cc4e620a9ec384377ca6e088')
+  .option('-s, --salt <value>', 'salt for account creation')
   .action(async (contractType: ContractType, method, options) => {
     try {
       console.log('Options:', options);
@@ -48,6 +49,39 @@ program
 
       console.log('Transaction successful');
       console.log(`Transaction hash: ${result.txHash}`);
+    } catch (error) {
+      console.error('Error:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('simulate')
+  .description('Call a view function on an Aztec contract')
+  .argument('<contract-type>', 'type of contract (e.g., token)')
+  .argument('<method>', 'method name to call')
+  .option('-a, --account <address>', 'account address to send from')
+  .option('-c, --contract <address>', 'contract address to call')
+  .option('-p, --params <values...>', 'method parameters')
+  .option('-s, --salt <value>', 'salt for account creation')
+  .action(async (contractType: ContractType, method, options) => {
+    try {
+      console.log('Options:', options);
+
+      if (!options.account || !options.contract) {
+        throw new Error('Account and contract addresses are required');
+      }
+
+      const result = await simulate(
+        method,
+        options.account,
+        options.contract,
+        options.params || [],
+        CONTRACT_ARTIFACTS[contractType],
+        options.salt
+      );
+
+      console.log('Transaction successful');
     } catch (error) {
       console.error('Error:', error);
       process.exit(1);
