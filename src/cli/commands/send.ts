@@ -7,7 +7,8 @@ export async function send(
   accountAddress: string, 
   contractAddress: string,
   args: any[],
-  contractArtifact: ContractArtifact
+  contractArtifact: ContractArtifact,
+  salt: string
 ) {
   try {
     // Connect to PXE
@@ -20,10 +21,11 @@ export async function send(
       pxe,
       Fr.ZERO,
       new PasswordAccountContract(),
-      Fr.fromString('0x268b4064751e9d98e9da30bb2b89c25eb21f35c0cc4e620a9ec384377ca6e088')
+      Fr.fromString(salt)
     );
     
     const wallet = await account.getWallet();
+    console.log("wallet:", wallet.getAddress().toString());
     console.log('Wallet loaded');
 
     const contract = await Contract.at(

@@ -28,6 +28,7 @@ program
   .option('-a, --account <address>', 'account address to send from')
   .option('-c, --contract <address>', 'contract address to call')
   .option('-p, --params <values...>', 'method parameters')
+  .option('-s, --salt <value>', 'salt for account creation', '0x268b4064751e9d98e9da30bb2b89c25eb21f35c0cc4e620a9ec384377ca6e088')
   .action(async (contractType: ContractType, method, options) => {
     try {
       console.log('Options:', options);
@@ -41,7 +42,8 @@ program
         options.account,
         options.contract,
         options.params || [],
-        CONTRACT_ARTIFACTS[contractType]
+        CONTRACT_ARTIFACTS[contractType],
+        options.salt
       );
 
       console.log('Transaction successful');
